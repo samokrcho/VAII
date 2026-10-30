@@ -1,0 +1,221 @@
+<?php
+
+/** @var \Framework\Support\LinkGenerator $link */
+?>
+
+<main class="document flex-grow-1">
+    <div class="container-fluid px-3 px-lg-5 py-4">
+
+        <!-- Přepínač režimu úprav (checkbox ve vzhledu Bootstrap tlačítka) -->
+        <input type="checkbox" class="btn-check edit-toggle" id="edit-mode" autocomplete="off">
+        <label class="btn btn-dark edit-button mb-4" for="edit-mode">
+            <span class="edit-button__view">Upravit deník</span>
+            <span class="edit-button__edit">Uložit deník</span>
+        </label>
+
+        <!-- Dvě části deníku: na malých zařízeních pod sebou, od "lg" vedle sebe -->
+        <div class="pages row g-4 justify-content-center">
+
+            <!-- ===================== LEVÁ STRANA ===================== -->
+            <div class="col-12 col-lg-6 page-col">
+                <article class="page" aria-labelledby="front-title">
+                    <div class="sheet sheet--front">
+
+                        <header class="sheet__head">
+                            <h1 id="front-title">Deník postavy</h1>
+                            <p class="logo" aria-label="Dračí Doupě II">
+                                <span class="logo__word">Dračí</span>
+                                <span class="logo__word">Doupě</span>
+                                <span class="logo__num">II</span>
+                            </p>
+                        </header>
+
+                        <section class="traits" aria-labelledby="traits-title">
+                            <div class="scale scale--threat">
+                                <ol class="scale__nums" reversed aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+                                <p class="scale__label"><span>Ohrožení</span></p>
+                            </div>
+
+                            <div class="identity">
+                                <h2 id="traits-title">Vlastnosti</h2>
+                                <label class="identity__field">Jméno: <input class="plain" type="text" name="jmeno"></label>
+                                <label class="identity__field">Rasa: <input class="plain" type="text" name="rasa"></label>
+                            </div>
+
+                            <div class="attr">
+                                <span class="attr__name">Tělo:</span>
+                                <span class="boxes" role="group" aria-label="Tělo"><input type="checkbox" aria-label="Tělo 1"><input type="checkbox" aria-label="Tělo 2"><input type="checkbox" aria-label="Tělo 3"><input type="checkbox" aria-label="Tělo 4"><input type="checkbox" aria-label="Tělo 5"><input type="checkbox" aria-label="Tělo 6"><input type="checkbox" aria-label="Tělo 7"><input type="checkbox" aria-label="Tělo 8"><input type="checkbox" aria-label="Tělo 9"><input type="checkbox" aria-label="Tělo 10"><input type="checkbox" aria-label="Tělo 11"></span>
+                                <input class="line" type="text" name="telo-poznamka" aria-label="Poznámka – Tělo">
+                            </div>
+                            <div class="attr">
+                                <span class="attr__name">Duše:</span>
+                                <span class="boxes" role="group" aria-label="Duše"><input type="checkbox" aria-label="Duše 1"><input type="checkbox" aria-label="Duše 2"><input type="checkbox" aria-label="Duše 3"><input type="checkbox" aria-label="Duše 4"><input type="checkbox" aria-label="Duše 5"><input type="checkbox" aria-label="Duše 6"><input type="checkbox" aria-label="Duše 7"><input type="checkbox" aria-label="Duše 8"><input type="checkbox" aria-label="Duše 9"><input type="checkbox" aria-label="Duše 10"><input type="checkbox" aria-label="Duše 11"></span>
+                                <input class="line" type="text" name="duse-poznamka" aria-label="Poznámka – Duše">
+                            </div>
+                            <div class="attr">
+                                <span class="attr__name">Vliv:</span>
+                                <span class="boxes" role="group" aria-label="Vliv"><input type="checkbox" aria-label="Vliv 1"><input type="checkbox" aria-label="Vliv 2"><input type="checkbox" aria-label="Vliv 3"><input type="checkbox" aria-label="Vliv 4"><input type="checkbox" aria-label="Vliv 5"><input type="checkbox" aria-label="Vliv 6"><input type="checkbox" aria-label="Vliv 7"><input type="checkbox" aria-label="Vliv 8"><input type="checkbox" aria-label="Vliv 9"><input type="checkbox" aria-label="Vliv 10"><input type="checkbox" aria-label="Vliv 11"></span>
+                                <input class="line" type="text" name="vliv-poznamka" aria-label="Poznámka – Vliv">
+                            </div>
+
+                            <div class="bonus">
+                                <h2>Bonusy / Postihy</h2>
+                                <input class="line" type="text" name="bonus-1" aria-label="Bonus nebo postih 1">
+                                <input class="line" type="text" name="bonus-2" aria-label="Bonus nebo postih 2">
+                            </div>
+
+                            <div class="classes">
+                                <div class="class-row class-row--head">
+                                    <h2>Povolání</h2>
+                                    <h2 class="class-row__trait-title">Povahový rys:</h2>
+                                </div>
+
+                                <div class="class-row">
+                                    <div class="class-cell class-cell--job">
+                                        <input class="plain" type="text" name="povolani-1" aria-label="Povolání 1">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Úroveň povolání 1"><input type="checkbox" aria-label="Úroveň povolání 1 1"><input type="checkbox" aria-label="Úroveň povolání 1 2"><input type="checkbox" aria-label="Úroveň povolání 1 3"><input type="checkbox" aria-label="Úroveň povolání 1 4"><input type="checkbox" aria-label="Úroveň povolání 1 5"></span>
+                                    </div>
+                                    <div class="class-cell class-cell--trait">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Povahový rys 1 – levá škála"><input type="checkbox" aria-label="Povahový rys 1 – levá škála 1"><input type="checkbox" aria-label="Povahový rys 1 – levá škála 2"><input type="checkbox" aria-label="Povahový rys 1 – levá škála 3"><input type="checkbox" aria-label="Povahový rys 1 – levá škála 4"><input type="checkbox" aria-label="Povahový rys 1 – levá škála 5"></span>
+                                        <input class="plain" type="text" name="rys-1" aria-label="Povahový rys 1">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Povahový rys 1 – pravá škála"><input type="checkbox" aria-label="Povahový rys 1 – pravá škála 1"><input type="checkbox" aria-label="Povahový rys 1 – pravá škála 2"><input type="checkbox" aria-label="Povahový rys 1 – pravá škála 3"><input type="checkbox" aria-label="Povahový rys 1 – pravá škála 4"><input type="checkbox" aria-label="Povahový rys 1 – pravá škála 5"></span>
+                                    </div>
+                                    <p class="class-row__hint">Úroveň</p>
+                                </div>
+                                <div class="class-row">
+                                    <div class="class-cell class-cell--job">
+                                        <input class="plain" type="text" name="povolani-2" aria-label="Povolání 2">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Úroveň povolání 2"><input type="checkbox" aria-label="Úroveň povolání 2 1"><input type="checkbox" aria-label="Úroveň povolání 2 2"><input type="checkbox" aria-label="Úroveň povolání 2 3"><input type="checkbox" aria-label="Úroveň povolání 2 4"><input type="checkbox" aria-label="Úroveň povolání 2 5"></span>
+                                    </div>
+                                    <div class="class-cell class-cell--trait">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Povahový rys 2 – levá škála"><input type="checkbox" aria-label="Povahový rys 2 – levá škála 1"><input type="checkbox" aria-label="Povahový rys 2 – levá škála 2"><input type="checkbox" aria-label="Povahový rys 2 – levá škála 3"><input type="checkbox" aria-label="Povahový rys 2 – levá škála 4"><input type="checkbox" aria-label="Povahový rys 2 – levá škála 5"></span>
+                                        <input class="plain" type="text" name="rys-2" aria-label="Povahový rys 2">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Povahový rys 2 – pravá škála"><input type="checkbox" aria-label="Povahový rys 2 – pravá škála 1"><input type="checkbox" aria-label="Povahový rys 2 – pravá škála 2"><input type="checkbox" aria-label="Povahový rys 2 – pravá škála 3"><input type="checkbox" aria-label="Povahový rys 2 – pravá škála 4"><input type="checkbox" aria-label="Povahový rys 2 – pravá škála 5"></span>
+                                    </div>
+                                    <p class="class-row__hint class-row__hint--small">Volné zkušenosti</p>
+                                </div>
+                                <div class="class-row">
+                                    <div class="class-cell class-cell--job">
+                                        <input class="plain" type="text" name="povolani-3" aria-label="Povolání 3">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Úroveň povolání 3"><input type="checkbox" aria-label="Úroveň povolání 3 1"><input type="checkbox" aria-label="Úroveň povolání 3 2"><input type="checkbox" aria-label="Úroveň povolání 3 3"><input type="checkbox" aria-label="Úroveň povolání 3 4"><input type="checkbox" aria-label="Úroveň povolání 3 5"></span>
+                                    </div>
+                                    <div class="class-cell class-cell--trait">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Povahový rys 3 – levá škála"><input type="checkbox" aria-label="Povahový rys 3 – levá škála 1"><input type="checkbox" aria-label="Povahový rys 3 – levá škála 2"><input type="checkbox" aria-label="Povahový rys 3 – levá škála 3"><input type="checkbox" aria-label="Povahový rys 3 – levá škála 4"><input type="checkbox" aria-label="Povahový rys 3 – levá škála 5"></span>
+                                        <input class="plain" type="text" name="rys-3" aria-label="Povahový rys 3">
+                                        <span class="boxes boxes--narrow" role="group" aria-label="Povahový rys 3 – pravá škála"><input type="checkbox" aria-label="Povahový rys 3 – pravá škála 1"><input type="checkbox" aria-label="Povahový rys 3 – pravá škála 2"><input type="checkbox" aria-label="Povahový rys 3 – pravá škála 3"><input type="checkbox" aria-label="Povahový rys 3 – pravá škála 4"><input type="checkbox" aria-label="Povahový rys 3 – pravá škála 5"></span>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </section>
+
+                        <section class="abilities" aria-labelledby="abilities-title">
+                            <div class="abilities__head">
+                                <h2 id="abilities-title">Zvláštní schopnosti</h2>
+                                <span class="abilities__col abilities__col--desc">popis</span>
+                                <span class="abilities__col abilities__col--act">aktivace</span>
+                                <span class="abilities__col abilities__col--job">povolání</span>
+                            </div>
+                            <div class="abilities__body">
+                                <div class="scale scale--advantage">
+                                    <ol class="scale__nums" reversed aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
+                                    <p class="scale__label"><span>Výhoda</span></p>
+                                </div>
+                                <ul class="abilities__list">
+                                    <li><input class="plain" type="text" name="schopnost-1" aria-label="Zvláštní schopnost 1"></li>
+                                    <li><input class="plain" type="text" name="schopnost-2" aria-label="Zvláštní schopnost 2"></li>
+                                    <li><input class="plain" type="text" name="schopnost-3" aria-label="Zvláštní schopnost 3"></li>
+                                    <li><input class="plain" type="text" name="schopnost-4" aria-label="Zvláštní schopnost 4"></li>
+                                    <li><input class="plain" type="text" name="schopnost-5" aria-label="Zvláštní schopnost 5"></li>
+                                    <li><input class="plain" type="text" name="schopnost-6" aria-label="Zvláštní schopnost 6"></li>
+                                    <li><input class="plain" type="text" name="schopnost-7" aria-label="Zvláštní schopnost 7"></li>
+                                    <li><input class="plain" type="text" name="schopnost-8" aria-label="Zvláštní schopnost 8"></li>
+                                    <li><input class="plain" type="text" name="schopnost-9" aria-label="Zvláštní schopnost 9"></li>
+                                    <li><input class="plain" type="text" name="schopnost-10" aria-label="Zvláštní schopnost 10"></li>
+                                    <li><input class="plain" type="text" name="schopnost-11" aria-label="Zvláštní schopnost 11"></li>
+                                    <li><input class="plain" type="text" name="schopnost-12" aria-label="Zvláštní schopnost 12"></li>
+                                    <li><input class="plain" type="text" name="schopnost-13" aria-label="Zvláštní schopnost 13"></li>
+                                    <li><input class="plain" type="text" name="schopnost-14" aria-label="Zvláštní schopnost 14"></li>
+                                    <li><input class="plain" type="text" name="schopnost-15" aria-label="Zvláštní schopnost 15"></li>
+                                    <li><input class="plain" type="text" name="schopnost-16" aria-label="Zvláštní schopnost 16"></li>
+                                    <li><input class="plain" type="text" name="schopnost-17" aria-label="Zvláštní schopnost 17"></li>
+                                    <li><input class="plain" type="text" name="schopnost-18" aria-label="Zvláštní schopnost 18"></li>
+                                    <li><input class="plain" type="text" name="schopnost-19" aria-label="Zvláštní schopnost 19"></li>
+                                </ul>
+                            </div>
+                        </section>
+
+                        <div class="sheet__foot" aria-hidden="true">
+                            <span class="rule rule--left"></span>
+                            <img class="sword" src="<?= $link->asset('images/sword.svg') ?>" alt="" width="304.5" height="64">
+                            <span class="rule rule--right"></span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+            <!-- ===================== PRAVÁ STRANA ===================== -->
+            <div class="col-12 col-lg-6 page-col">
+                <!-- ===================== PRAVÁ STRANA ===================== -->
+                <article class="page" aria-label="Vybavení a poznámky">
+                    <div class="sheet sheet--back">
+
+                        <div class="money">
+                            <label class="money__label" for="dukaty">Peníze:</label>
+                            <input class="line" id="dukaty" type="text" inputmode="numeric" name="dukaty" aria-label="Dukátů">
+                            <span class="money__unit">dukátů,</span>
+                            <input class="line" type="text" inputmode="numeric" name="grose" aria-label="Grošů">
+                            <span class="money__unit">grošů,</span>
+                            <input class="line" type="text" inputmode="numeric" name="halere" aria-label="Haléřů">
+                            <span class="money__unit">haléřů</span>
+                            <label class="money__label" for="suroviny">Suroviny:</label>
+                            <input class="line" id="suroviny" type="text" name="suroviny">
+                        </div>
+
+                        <section class="equipment" aria-labelledby="equip-title">
+                            <div class="equipment__head">
+                                <h2 id="equip-title">Vybavení</h2>
+                                <p class="equipment__load">Naložení:</p>
+                                <p class="equipment__lst">L / S / T</p>
+                            </div>
+                            <ul class="equipment__list">
+                                <li><input class="line" type="text" name="vybaveni-1-a" aria-label="Vybavení 1"><input class="line" type="text" name="vybaveni-1-b" aria-label="Vybavení 1 – doplněk"><input class="line" type="text" name="vybaveni-1-c" aria-label="Vybavení 1 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-2-a" aria-label="Vybavení 2"><input class="line" type="text" name="vybaveni-2-b" aria-label="Vybavení 2 – doplněk"><input class="line" type="text" name="vybaveni-2-c" aria-label="Vybavení 2 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-3-a" aria-label="Vybavení 3"><input class="line" type="text" name="vybaveni-3-b" aria-label="Vybavení 3 – doplněk"><input class="line" type="text" name="vybaveni-3-c" aria-label="Vybavení 3 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-4-a" aria-label="Vybavení 4"><input class="line" type="text" name="vybaveni-4-b" aria-label="Vybavení 4 – doplněk"><input class="line" type="text" name="vybaveni-4-c" aria-label="Vybavení 4 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-5-a" aria-label="Vybavení 5"><input class="line" type="text" name="vybaveni-5-b" aria-label="Vybavení 5 – doplněk"><input class="line" type="text" name="vybaveni-5-c" aria-label="Vybavení 5 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-6-a" aria-label="Vybavení 6"><input class="line" type="text" name="vybaveni-6-b" aria-label="Vybavení 6 – doplněk"><input class="line" type="text" name="vybaveni-6-c" aria-label="Vybavení 6 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-7-a" aria-label="Vybavení 7"><input class="line" type="text" name="vybaveni-7-b" aria-label="Vybavení 7 – doplněk"><input class="line" type="text" name="vybaveni-7-c" aria-label="Vybavení 7 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-8-a" aria-label="Vybavení 8"><input class="line" type="text" name="vybaveni-8-b" aria-label="Vybavení 8 – doplněk"><input class="line" type="text" name="vybaveni-8-c" aria-label="Vybavení 8 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-9-a" aria-label="Vybavení 9"><input class="line" type="text" name="vybaveni-9-b" aria-label="Vybavení 9 – doplněk"><input class="line" type="text" name="vybaveni-9-c" aria-label="Vybavení 9 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-10-a" aria-label="Vybavení 10"><input class="line" type="text" name="vybaveni-10-b" aria-label="Vybavení 10 – doplněk"><input class="line" type="text" name="vybaveni-10-c" aria-label="Vybavení 10 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-11-a" aria-label="Vybavení 11"><input class="line" type="text" name="vybaveni-11-b" aria-label="Vybavení 11 – doplněk"><input class="line" type="text" name="vybaveni-11-c" aria-label="Vybavení 11 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-12-a" aria-label="Vybavení 12"><input class="line" type="text" name="vybaveni-12-b" aria-label="Vybavení 12 – doplněk"><input class="line" type="text" name="vybaveni-12-c" aria-label="Vybavení 12 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-13-a" aria-label="Vybavení 13"><input class="line" type="text" name="vybaveni-13-b" aria-label="Vybavení 13 – doplněk"><input class="line" type="text" name="vybaveni-13-c" aria-label="Vybavení 13 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-14-a" aria-label="Vybavení 14"><input class="line" type="text" name="vybaveni-14-b" aria-label="Vybavení 14 – doplněk"><input class="line" type="text" name="vybaveni-14-c" aria-label="Vybavení 14 – poznámka"></li>
+                                <li><input class="line" type="text" name="vybaveni-15-a" aria-label="Vybavení 15"><input class="line" type="text" name="vybaveni-15-b" aria-label="Vybavení 15 – doplněk"><input class="line" type="text" name="vybaveni-15-c" aria-label="Vybavení 15 – poznámka"></li>
+                            </ul>
+                        </section>
+
+                        <section class="notes" aria-labelledby="notes-title">
+                            <h2 id="notes-title">Poznámky</h2>
+                            <div class="notes__body">
+                                <ul class="notes__rules" aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ul>
+                                <label>
+                                    <textarea name="poznamky" aria-labelledby="notes-title"></textarea>
+                                </label>
+                            </div>
+                        </section>
+
+                        <div class="sheet__foot" aria-hidden="true">
+                            <span class="rule rule--left"></span>
+                            <img class="sword" src="<?= $link->asset('images/sword.svg') ?>" alt="" width="304.5" height="64">
+                            <span class="rule rule--right"></span>
+                        </div>
+                    </div>
+                </article>
+            </div>
+
+        </div>
+    </div>
+</main>

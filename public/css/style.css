@@ -1,0 +1,550 @@
+/* ==========================================================================
+   Dračí Doupě II – vlastní styly nad Bootstrapem 5
+   Společný soubor pro dennik.html a dennik_list.html.
+   (Načítá se až po Bootstrapu, proto přepisuje jeho výchozí hodnoty.)
+   ========================================================================== */
+
+:root {
+    --ink: #1f1f1f;
+    --paper: #f5f4f0;
+    --paper-border: #9c9994;
+    --rule: #7a7a7a;
+    --header-bg: #fafaf9;
+    --header-border: #deddda;
+    --nav-ink: #454440;
+
+    --font-text: "EB Garamond", Garamond, Georgia, "Times New Roman", serif;
+    --font-ui: Inter, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --font-logo: "UnifrakturCook", "Old English Text MT", Georgia, serif;
+}
+
+body {
+    min-width: 320px;
+    color: var(--ink);
+    font-family: var(--font-text), serif;
+}
+
+h1, h2, p, ul, ol { margin: 0; padding: 0; }
+ul, ol { list-style: none; }
+
+/* ---------- Hlavička (Bootstrap navbar) ---------- */
+.site-header {
+    background: var(--header-bg);
+    border-bottom: 1px solid var(--header-border);
+    font-family: var(--font-ui), serif;
+}
+
+.site-header .navbar {
+    --bs-navbar-padding-y: 0.75rem;
+    --bs-navbar-color: var(--nav-ink);
+    --bs-navbar-hover-color: var(--ink);
+    --bs-navbar-active-color: var(--ink);
+    --bs-navbar-brand-color: var(--ink);
+    --bs-navbar-brand-hover-color: var(--ink);
+    min-height: 64px;
+}
+
+.site-header .navbar-brand { font-size: 18px; font-weight: 600; }
+.site-header .nav-link { font-size: 14px; font-weight: 500; }
+
+.brand__mark {
+    display: grid;
+    place-items: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    background: var(--ink);
+    color: var(--header-bg);
+    font-size: 14px;
+}
+
+.user { display: block; width: 40px; height: 40px; border-radius: 50%; }
+.user:hover { background: #ecebe8; }
+.user img { display: block; }
+
+/* na mobilu se rozbalené menu zobrazí pod hlavičkou */
+@media (max-width: 767.98px) {
+    .site-header .navbar-collapse { padding: 0.25rem 0 0.5rem; }
+    .site-header .nav-link { padding: 0.65rem 0; border-top: 1px solid #efeeeb; font-size: 15px; }
+}
+
+/* ---------- Stránka: deník postavy ---------- */
+.document { background: #fff; }
+
+.edit-button { font-family: var(--font-ui), serif; }
+.edit-button__edit { display: none; }
+.edit-toggle:checked ~ .edit-button .edit-button__view { display: none; }
+.edit-toggle:checked ~ .edit-button .edit-button__edit { display: inline; }
+
+/* ---------- List (papier) ---------- */
+.page {
+    container-type: inline-size;      /* odtud se odvozuje měřítko listu */
+    width: min(760px, 100%);
+    margin-inline: auto;
+}
+
+/* od "lg" jsou listy vedle sebe – přisunout je ke středu */
+@media (min-width: 992px) {
+    .page-col:first-child .page { margin-right: 0; }
+    .page-col:last-child  .page { margin-left: 0; }
+}
+
+.sheet {
+    --px: calc(100cqw / 760);         /* 1 jednotka návrhu */
+
+    position: relative;
+    min-height: 0;
+    overflow: clip;
+    padding: 0 calc(57.34 * var(--px)) 0 calc(59.06 * var(--px));
+    border: max(1px, calc(1.342 * var(--px))) solid var(--paper-border);
+    border-radius: calc(25.166 * var(--px));
+    background: var(--paper);
+    box-shadow: inset 0 0 calc(25.166 * var(--px)) var(--px) rgba(51, 48, 43, 0.18);
+    font-size: calc(25.166 * var(--px));
+    line-height: normal;
+    transition: box-shadow 180ms ease;
+}
+
+.sheet--front { aspect-ratio: 760 / 1008.3; }
+.sheet--back  { aspect-ratio: 760 / 1003.3; }
+
+/* v režimu úprav se kolem listů zobrazí světlý rámeček */
+.edit-toggle:checked ~ .pages .sheet {
+    box-shadow:
+            inset 0 0 calc(25.166 * var(--px)) var(--px) rgba(51, 48, 43, 0.18),
+            0 0 0 3px rgba(44, 44, 44, 0.16);
+}
+
+.sheet h1,
+.sheet h2 {
+    font-size: inherit;
+    font-weight: 400;
+    line-height: normal;
+}
+
+/* Políčka: mimo režim úprav jen k prohlížení */
+.sheet input,
+.sheet textarea { pointer-events: none; }
+.edit-toggle:checked ~ .pages .sheet input,
+.edit-toggle:checked ~ .pages .sheet textarea { pointer-events: auto; }
+
+/* psací linka (vyplnitelná) */
+.line,
+.plain {
+    display: block;
+    min-width: 0;
+    padding: 0 calc(2 * var(--px));
+    border: 0;
+    border-radius: 0;
+    background: transparent;
+    font-size: calc(20 * var(--px));
+    outline: 0;
+}
+
+.line {
+    width: 100%;
+    border-bottom: calc(0.922 * var(--px)) solid var(--rule);
+}
+
+.plain { width: 100%; }
+
+.line:focus,
+.plain:focus,
+.notes textarea:focus { background: rgba(255, 255, 255, 0.55); }
+
+/* čtvercová políčka */
+.boxes {
+    display: flex;
+    gap: calc(5.02 * var(--px));
+}
+
+.boxes input {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: calc(16.78 * var(--px));
+    height: calc(16.78 * var(--px));
+    margin: 0;
+    border: calc(1.342 * var(--px)) solid var(--ink);
+    border-radius: 0;
+    background: transparent;
+    cursor: pointer;
+}
+.boxes input:checked { background: var(--ink); }
+.boxes input:focus-visible { outline: calc(2 * var(--px)) solid #8a8a86; outline-offset: calc(2 * var(--px)); }
+
+.boxes--narrow { gap: calc(3.33 * var(--px)); }
+.boxes--narrow input { width: calc(10.07 * var(--px)); }
+
+/* ---------- Levý list: hlavička ---------- */
+.sheet__head {
+    position: relative;
+    height: calc(131.16 * var(--px));
+    padding-top: calc(43.96 * var(--px));
+}
+
+.sheet__head h1 {
+    font-size: calc(35.232 * var(--px));
+    font-weight: 600;
+}
+
+.logo {
+    position: absolute;
+    top: calc(37.25 * var(--px));
+    right: calc(-6 * var(--px));
+    width: calc(90 * var(--px));
+    text-align: center;
+    font-family: var(--font-logo), serif;
+    font-weight: 700;
+    font-size: calc(33.554 * var(--px));
+    line-height: normal;
+}
+
+.logo__word { display: block; height: calc(25.16 * var(--px)); }
+
+.logo__num {
+    display: block;
+    margin-top: calc(5.04 * var(--px));
+    font-family: var(--font-text), serif;
+    font-size: calc(25.166 * var(--px));
+    font-weight: 600;
+}
+
+/* ---------- Levý list: Vlastnosti ---------- */
+.traits { position: relative; }
+
+.identity {
+    display: flex;
+    height: calc(35.3 * var(--px));
+    font-size: calc(23.488 * var(--px));
+}
+
+.identity h2 {
+    flex: 0 0 calc(229.6 * var(--px));
+    padding-left: calc(1.68 * var(--px));
+}
+
+.identity__field {
+    display: flex;
+    align-items: flex-start;
+    min-width: 0;
+}
+.identity__field:first-of-type { flex: 0 0 calc(226 * var(--px)); }
+.identity__field:last-of-type  { flex: 1; }
+.identity__field .plain { height: calc(26 * var(--px)); margin-left: calc(6 * var(--px)); width: auto; flex: 1; }
+
+.attr {
+    display: grid;
+    grid-template-columns: calc(68.8 * var(--px)) calc(234.78 * var(--px)) calc(313.7 * var(--px));
+    height: calc(30.2 * var(--px));
+}
+
+.attr__name {
+    padding-left: calc(1.68 * var(--px));
+    font-style: italic;
+}
+
+.attr .boxes { margin-top: calc(8.4 * var(--px)); align-self: start; }
+
+.attr .line {
+    grid-column: 3;
+    width: 100%;
+    height: calc(26.8 * var(--px));
+    position: relative;
+    left: calc(13.42 * var(--px));      /* mezera mezi políčky a linkou */
+}
+
+.bonus { margin-top: calc(8.4 * var(--px)); }
+.bonus h2 { height: calc(26.8 * var(--px)); }
+.bonus .line { height: calc(23.5 * var(--px)); }
+
+/* ---------- Levý list: Povolání ---------- */
+.classes { margin-top: calc(1.7 * var(--px)); }
+
+.class-row {
+    display: grid;
+    grid-template-columns:
+    calc(285.2 * var(--px))
+    calc(5 * var(--px))
+    calc(241.6 * var(--px))
+    calc(11.8 * var(--px))
+    1fr;
+    height: calc(23.5 * var(--px));
+}
+
+.class-row--head { height: calc(25.1 * var(--px)); }
+.class-row--head .class-row__trait-title { grid-column: 3; }
+
+.class-cell {
+    display: flex;
+    align-items: flex-end;
+    min-width: 0;
+    height: 100%;
+    border-bottom: calc(0.922 * var(--px)) solid var(--rule);
+}
+
+.class-cell--job   { grid-column: 1; }
+.class-cell--trait { grid-column: 3; justify-content: space-between; }
+
+.class-cell .boxes { padding-bottom: 0; }
+
+.class-cell--job .plain {
+    flex: 0 0 calc(110.7 * var(--px));
+    width: calc(110.7 * var(--px));
+    height: 100%;
+}
+
+.class-cell--trait .plain {
+    flex: 1;
+    height: 100%;
+}
+
+.class-row__hint {
+    grid-column: 5;
+    align-self: end;
+    position: relative;
+    top: calc(-2.4 * var(--px));
+    font-size: calc(18.455 * var(--px));
+    font-style: italic;
+    white-space: nowrap;
+}
+.class-row__hint--small { font-size: calc(16.777 * var(--px)); }
+.class-row:nth-child(3) .class-row__hint { top: calc(-1.4 * var(--px)); }
+
+/* ---------- Levý list: Zvláštní schopnosti ---------- */
+.abilities { margin-top: calc(3.3 * var(--px)); }
+
+.abilities__head {
+    position: relative;
+    height: calc(30.72 * var(--px));
+}
+
+.abilities__col {
+    position: absolute;
+    top: calc(6.7 * var(--px));
+    font-size: calc(18.455 * var(--px));
+    font-style: italic;
+    white-space: nowrap;
+}
+.abilities__col--desc { left: calc(231.5 * var(--px)); }
+.abilities__col--act  { left: calc(523.4 * var(--px)); }
+.abilities__col--job  { left: calc(590.5 * var(--px)); }
+
+.abilities__body { position: relative; }
+
+.abilities__list li {
+    height: calc(22.98 * var(--px));
+    border-bottom: calc(0.922 * var(--px)) solid var(--rule);
+}
+.abilities__list .plain { height: 100%; }
+
+/* ---------- Stupnice na levém okraji (Ohrožení / Výhoda) ---------- */
+.scale {
+    position: absolute;
+    left: calc(-59.06 * var(--px));
+    top: 0;
+    width: calc(59.06 * var(--px));
+    height: 100%;
+    pointer-events: none;
+}
+
+.scale__nums {
+    position: absolute;
+    left: calc(22.15 * var(--px));
+    font-size: calc(20.132 * var(--px));
+    font-style: italic;
+    line-height: calc(22.7 * var(--px));
+}
+.scale__nums li::before { content: counter(list-item); }
+.scale__nums li { height: calc(22.7 * var(--px)); }
+
+.scale__label {
+    position: absolute;
+    left: calc(15.44 * var(--px));
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: calc(28 * var(--px));
+    font-size: calc(21.81 * var(--px));
+    font-style: italic;
+    white-space: nowrap;
+}
+.scale__label span { transform: rotate(-90deg); flex: none; }
+
+.scale--threat .scale__nums  { top: calc(1.5 * var(--px)); }
+.scale--threat .scale__label { top: calc(238.4 * var(--px)); height: calc(77 * var(--px)); }
+
+.scale--advantage .scale__nums  { top: calc(9.4 * var(--px)); }
+.scale--advantage .scale__label { top: calc(242.58 * var(--px)); height: calc(64 * var(--px)); }
+
+/* ---------- Dekorace dole (meč) ---------- */
+.sheet__foot {
+    position: absolute;
+    left: calc(59.06 * var(--px));
+    bottom: calc(7.7 * var(--px));
+    width: calc(639.16 * var(--px));
+    display: grid;
+    grid-template-columns:
+    calc(130.9 * var(--px))
+    calc(51.7 * var(--px))
+    calc(301.5 * var(--px))
+    calc(51.06 * var(--px))
+    calc(104 * var(--px));
+    height: calc(61 * var(--px));
+}
+
+.sword {
+    grid-column: 3;
+    display: block;
+    max-width: none;
+    width: calc(304.5 * var(--px));
+    height: calc(64 * var(--px));
+    margin: calc(-1.5 * var(--px)) 0 0 calc(-1.5 * var(--px));
+}
+
+.rule {
+    align-self: start;
+    margin-top: calc(29.73 * var(--px));
+    border-top: calc(1.342 * var(--px)) solid var(--rule);
+}
+.rule--left  { grid-column: 1; }
+.rule--right { grid-column: 5; }
+
+/* ---------- Pravý list ---------- */
+.money {
+    display: grid;
+    grid-template-columns:
+    calc(70.5 * var(--px))
+    calc(65.43 * var(--px))
+    calc(55.37 * var(--px))
+    calc(65.43 * var(--px))
+    calc(55.37 * var(--px))
+    calc(63.75 * var(--px))
+    calc(78.85 * var(--px))
+    calc(92.2 * var(--px))
+    calc(68.79 * var(--px));
+    align-items: start;
+    height: calc(25.17 * var(--px));
+    margin-top: calc(47.31 * var(--px));
+}
+
+.money__label { padding-left: 0; }
+.money .line { height: calc(25.17 * var(--px)); }
+
+.money__unit {
+    padding-top: calc(5.04 * var(--px));
+    padding-left: calc(3.27 * var(--px));
+    font-size: calc(20.132 * var(--px));
+    font-style: italic;
+    white-space: nowrap;
+}
+.money__unit:nth-of-type(2) { padding-left: calc(8.37 * var(--px)); }
+.money__unit:nth-of-type(3) { padding-left: calc(4.95 * var(--px)); }
+
+.equipment__head {
+    display: grid;
+    grid-template-columns: calc(406 * var(--px)) calc(117.4 * var(--px)) 1fr;
+    height: calc(32.37 * var(--px));
+    margin-top: calc(13.42 * var(--px));
+}
+
+.equipment__lst {
+    padding-top: calc(3.36 * var(--px));
+    font-size: calc(23.488 * var(--px));
+    font-style: italic;
+}
+
+.equipment__list li {
+    display: grid;
+    grid-template-columns:
+    calc(152.7 * var(--px))
+    calc(8.4 * var(--px))
+    calc(152.7 * var(--px))
+    calc(16.7 * var(--px))
+    calc(310.4 * var(--px));
+    height: calc(22.99 * var(--px));
+}
+.equipment__list .line { height: 100%; }
+.equipment__list .line:nth-child(1) { grid-column: 1; }
+.equipment__list .line:nth-child(2) { grid-column: 3; }
+.equipment__list .line:nth-child(3) { grid-column: 5; }
+
+.notes { margin-top: calc(13.7 * var(--px)); }
+.notes h2 { height: calc(22.3 * var(--px)); }
+
+.notes__body { position: relative; width: calc(640.9 * var(--px)); }
+
+.notes__rules li {
+    height: calc(22.99 * var(--px));
+    border-bottom: calc(0.922 * var(--px)) solid var(--rule);
+}
+
+.notes textarea {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0 calc(2 * var(--px));
+    border: 0;
+    resize: none;
+    outline: 0;
+    overflow: hidden;
+    background: transparent;
+    font-size: calc(20 * var(--px));
+    line-height: calc(22.99 * var(--px));
+}
+
+/* ---------- Stránka: seznam deníků ---------- */
+.diaries {
+    background:
+            url("../images/pozadie.png") center top / cover no-repeat,
+            #a7a7a7;
+    padding: 31px 0 68px;
+}
+
+.diaries__inner { max-width: 1485px; }
+
+.diaries__title {
+    display: flex;
+    align-items: baseline;
+    justify-content: center;
+    gap: 10px;
+    margin: 0 0 40px;
+    font-size: clamp(34px, 3.912vw, 64px);
+    line-height: normal;
+    white-space: nowrap;
+}
+.diaries__fraktur { font-family: var(--font-logo), serif; font-weight: 700; }
+.diaries__roman   { font-family: var(--font-text), serif; font-weight: 600; }
+
+.diaries form { font-family: var(--font-ui), serif; }
+
+.diary { color: inherit; border-radius: 12px; }
+.diary:focus-visible { outline: 3px solid #2c2c2c; outline-offset: 4px; }
+
+.diary__img {
+    display: block;
+    height: auto;
+    filter: drop-shadow(0 2px 6px rgba(0, 0, 0, 0.22));
+    transition: transform 160ms ease, filter 160ms ease;
+}
+.diary:hover .diary__img,
+.diary:focus-visible .diary__img {
+    transform: translateY(-4px);
+    filter: drop-shadow(0 10px 16px rgba(0, 0, 0, 0.32));
+}
+
+.diary__meta { line-height: 1.25; }
+.diary__meta strong { font-size: 22px; font-weight: 600; }
+.diary__meta .fst-italic { font-size: 17px; }
+.diary__meta small { margin-top: 2px; font: 400 12px var(--font-ui); color: #3a3a38; }
+
+@media (max-width: 575.98px) {
+    .diaries { padding-top: 24px; }
+    .diary__meta strong { font-size: 18px; }
+    .diary__meta .fst-italic { font-size: 15px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .diary__img, .sheet { transition: none; }
+}
