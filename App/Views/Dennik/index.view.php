@@ -27,7 +27,7 @@
                 </select>
             </div>
             <div class="col-12 col-md-auto">
-                <button type="button" class="btn btn-dark w-100">+ Nový deník</button>
+                <a class="btn btn-dark w-100" href="<?= $link->url('dennik.create') ?>">+ Nový deník</a>
             </div>
         </form>
 

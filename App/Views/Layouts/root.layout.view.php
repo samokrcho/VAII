@@ -54,8 +54,16 @@ $current = strtolower($_GET['c'] ?? 'home');
 
             <div class="collapse navbar-collapse" id="hlavni-menu">
                 <ul class="navbar-nav ms-md-auto me-md-4 gap-md-3">
-                    <li class="nav-item"><a class="nav-link" href="#">Povolání</a></li>
-                    <li class="nav-item"><a class="nav-link" href="#">Rasa</a></li>
+                    <li class="nav-item">
+                        <a class="nav-link<?= $current === 'povolanie' ? ' active' : '' ?>"
+                           href="<?= $link->url('povolanie.index') ?>"
+                           <?= $current === 'povolanie' ? 'aria-current="page"' : '' ?>>Povolání</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link<?= $current === 'rasa' ? ' active' : '' ?>"
+                           href="<?= $link->url('rasa.index') ?>"
+                           <?= $current === 'rasa' ? 'aria-current="page"' : '' ?>>Rasa</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link<?= $current === 'dennik' ? ' active' : '' ?>"
                            href="<?= $link->url('dennik.index') ?>"

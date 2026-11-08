@@ -548,3 +548,23 @@ ul, ol { list-style: none; }
 @media (prefers-reduced-motion: reduce) {
     .diary__img, .sheet { transition: none; }
 }
+
+/* ==========================================================================
+   Informační stránky (Rasy, Povolání) a formulář nového deníku
+   ========================================================================== */
+.info { background: var(--paper); }
+.info__title { font-family: var(--font-logo), serif; font-weight: 700; font-size: clamp(2.2rem, 6vw, 3.4rem); margin-bottom: .5rem; }
+.info__lead { max-width: 60ch; margin-bottom: 2rem; font-size: 1.15rem; }
+.info__item { margin-bottom: 2.5rem; }
+.info__item > h2 { font-size: clamp(1.7rem, 4vw, 2.2rem); font-weight: 600; border-bottom: 1px solid var(--paper-border); padding-bottom: .25rem; margin-bottom: 1rem; }
+.info__sub { font-size: 1.3rem; font-weight: 600; margin: 1.25rem 0 .75rem; }
+.info__details { margin-bottom: .5rem; }
+.info__details summary { cursor: pointer; font-weight: 600; font-size: 1.15rem; }
+.info__text { margin-top: .5rem; max-width: 80ch; }
+.trait { padding: .9rem 1rem; border: 1px solid var(--paper-border); border-radius: .5rem; background: #fff; }
+.trait h3 { font-size: 1.2rem; font-weight: 600; margin-bottom: .35rem; }
+.trait h3 small { font-family: var(--font-ui), sans-serif; font-size: .7em; font-weight: 500; color: var(--nav-ink); }
+.trait__quote { font-style: italic; color: #4a4a47; margin-bottom: .5rem; }
+.trait__quote em { font-style: italic; }
+.trait__attr { font-weight: 400; }
+.info .form-label { font-family: var(--font-ui), sans-serif; font-weight: 500; }
