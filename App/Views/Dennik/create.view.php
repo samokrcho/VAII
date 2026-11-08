@@ -31,7 +31,7 @@ $err = function (string $k) use ($errors) {
                 <label class="form-label" for="idRasa">Rasa</label>
                 <select class="form-select<?= $invalid('idRasa') ?>" id="idRasa" name="idRasa" required>
                     <option value="">– vyber rasu –</option>
-                    <?php foreach ($rasy as $rasa): ?>
+                    <?php foreach ($rasy as $rasa) : ?>
                         <option value="<?= (int)$rasa->idRasa ?>"<?= (string)$val('idRasa') === (string)$rasa->idRasa ? ' selected' : '' ?>><?= e($rasa->nazov) ?></option>
                     <?php endforeach; ?>
                 </select>
@@ -44,17 +44,25 @@ $err = function (string $k) use ($errors) {
                     <option value="">– vyber rasovou schopnost –</option>
                     <?php
                     $skupina = null;
-                    foreach ($rasoveSchopnosti as $rs):
-                        if ($rs->idRasa !== $skupina):
-                            if ($skupina !== null): echo '</optgroup>'; endif;
+                    foreach ($rasoveSchopnosti as $rs) :
+                        if ($rs->idRasa !== $skupina) :
+                            if ($skupina !== null) :
+                                echo '</optgroup>';
+                            endif;
                             $skupina = $rs->idRasa;
                             $nazovRasy = '';
-                            foreach ($rasy as $r): if ((int)$r->idRasa === $rs->idRasa): $nazovRasy = $r->nazov; endif; endforeach;
+                            foreach ($rasy as $r) :
+                                if ((int)$r->idRasa === $rs->idRasa) :
+                                    $nazovRasy = $r->nazov;
+                                endif;
+                            endforeach;
                             echo '<optgroup label="' . e($nazovRasy) . '">';
                         endif; ?>
                         <option value="<?= (int)$rs->idRasovaSchopnost ?>"<?= (string)$val('idRasovaSchopnost') === (string)$rs->idRasovaSchopnost ? ' selected' : '' ?>><?= e($rs->nazov) ?></option>
                     <?php endforeach;
-                    if ($skupina !== null): echo '</optgroup>'; endif; ?>
+                    if ($skupina !== null) :
+                        echo '</optgroup>';
+                    endif; ?>
                 </select>
                 <div id="rs-help" class="form-text">Schopnost musí patřit k vybrané rase.</div>
                 <?= $err('idRasovaSchopnost') ?>
@@ -65,7 +73,7 @@ $err = function (string $k) use ($errors) {
                     <label class="form-label" for="idPovolanie">První povolání (nepovinné)</label>
                     <select class="form-select<?= $invalid('idPovolanie') ?>" id="idPovolanie" name="idPovolanie">
                         <option value="">– žádné –</option>
-                        <?php foreach ($povolania as $p): ?>
+                        <?php foreach ($povolania as $p) : ?>
                             <option value="<?= (int)$p->idPovolanie ?>"<?= (string)$val('idPovolanie') === (string)$p->idPovolanie ? ' selected' : '' ?>><?= e($p->nazov) ?></option>
                         <?php endforeach; ?>
                     </select>
@@ -74,7 +82,7 @@ $err = function (string $k) use ($errors) {
                 <div class="col-12 col-sm-4">
                     <label class="form-label" for="uroven">Úroveň</label>
                     <select class="form-select<?= $invalid('uroven') ?>" id="uroven" name="uroven">
-                        <?php for ($i = 1; $i <= 5; $i++): ?>
+                        <?php for ($i = 1; $i <= 5; $i++) : ?>
                             <option value="<?= $i ?>"<?= (int)($val('uroven') ?: 1) === $i ? ' selected' : '' ?>><?= $i ?></option>
                         <?php endfor; ?>
                     </select>
