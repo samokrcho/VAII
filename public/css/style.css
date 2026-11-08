@@ -75,6 +75,10 @@ ul, ol { list-style: none; }
 .edit-button__edit { display: none; }
 .edit-toggle:checked ~ .edit-button .edit-button__view { display: none; }
 .edit-toggle:checked ~ .edit-button .edit-button__edit { display: inline; }
+/* tlačidlo "Uložit" je vidět jen v režimu úprav; pole, která se neukládají, zůstávají jen k prohlížení */
+.edit-submit { display: none; font-family: var(--font-ui), serif; }
+.edit-toggle:checked ~ .edit-submit { display: inline-block; }
+.sheet input[readonly], .sheet .ro input { pointer-events: none !important; }
 
 /* ---------- List (papier) ---------- */
 .page {

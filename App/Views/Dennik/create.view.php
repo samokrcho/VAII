@@ -57,7 +57,7 @@ $err = function (string $k) use ($errors) {
                                 endif;
                             endforeach;
                             echo '<optgroup label="' . e($nazovRasy) . '">';
-                        endif; ?>
+                        endif; ?>>
                         <option value="<?= (int)$rs->idRasovaSchopnost ?>"<?= (string)$val('idRasovaSchopnost') === (string)$rs->idRasovaSchopnost ? ' selected' : '' ?>><?= e($rs->nazov) ?></option>
                     <?php endforeach;
                     if ($skupina !== null) :

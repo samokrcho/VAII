@@ -9,6 +9,9 @@ use App\Models\Povolanie;
 use App\Models\RasovaSchopnost;
 use App\Models\Rasa;
 use Framework\Core\BaseController;
+use App\Models\DennikZvlastnaSchopnost;
+use App\Models\ZvlastnaSchopnost;
+use Framework\Http\HttpException;
 use Framework\Http\Request;
 use Framework\Http\Responses\Response;
 
@@ -16,13 +19,13 @@ use Framework\Http\Responses\Response;
  * Class DennikController
  *
  * Spravuje denníky postáv hry Dračí doupě II:
- *  - index  - zoznam denníkov (dennik_list),
- *  - detail - konkrétny denník postavy (dennik),
+ *  - index  - zoznam denníkov (Read),
+ *  - detail - konkrétny denník postavy (Read),
+ *  - update - uloženie zmien denníka (Update),
+ *  - delete - zmazanie denníka (Delete),
  *  - create - formulár na vytvorenie nového denníka,
  *  - store  - uloženie nového denníka do databázy (POST).
  *
- * Zatiaľ pracuje len s placeholder dátami. Po pridaní modelu a databázy sa pole nižšie nahradí načítaním
- * z databázy (napr. Dennik::getAll()).
  *
  * @package App\Controllers
  */
@@ -41,25 +44,150 @@ class DennikController extends BaseController
     }
 
     /**
-     * Zobrazí zoznam denníkov.
-     *
-     * @param Request $request
-     * @return Response
+     * Zobrazí zoznam denníkov z databázy (voliteľne filtrovaný podľa mena postavy v parametri `q`).
      */
     public function index(Request $request): Response
     {
-        return $this->html(['denniky' => $this->getPlaceholderDenniky()]);
+        $q = trim((string)$request->get('q'));
+        $zaznamy = $q === ''
+            ? Dennik::getAll(orderBy: 'upraveny DESC')
+            : Dennik::getAll('meno_postavy LIKE ?', ['%' . $q . '%'], 'upraveny DESC');
+
+        $rasy = [];
+        foreach (Rasa::getAll() as $r) {
+            $rasy[$r->idRasa] = $r->nazov;
+        }
+        $hraci = [];
+        foreach (Pouzivatel::getAll() as $u) {
+            $hraci[$u->idPouzivatel] = $u->meno;
+        }
+        $nazvyPovolani = [];
+        foreach (Povolanie::getAll() as $p) {
+            $nazvyPovolani[$p->idPovolanie] = $p->nazov;
+        }
+        $povolaniaDennika = [];
+        foreach (DennikPovolanie::getAll('uroven > 0', [], 'uroven DESC') as $dp) {
+            $povolaniaDennika[$dp->idDennik][] = $dp;
+        }
+
+        $denniky = [];
+        foreach ($zaznamy as $d) {
+            $povolania = $povolaniaDennika[$d->idDennik] ?? [];
+            $denniky[] = [
+                'id' => $d->idDennik,
+                'jmeno' => $d->menoPostavy,
+                'rasa' => $rasy[$d->idRasa] ?? '',
+                'povolani' => $povolania ? ($nazvyPovolani[$povolania[0]->idPovolanie] ?? '') : 'bez povolání',
+                'uroven' => array_sum(array_map(fn($dp) => $dp->uroven, $povolania)),
+                'hrac' => $hraci[$d->idPouzivatel] ?? '',
+            ];
+        }
+        return $this->html(['denniky' => $denniky, 'q' => $q]);
     }
 
     /**
-     * Zobrazí denník jednej postavy (zatiaľ prázdny formulár podľa papierového denníka).
-     *
-     * @param Request $request
-     * @return Response
+     * Zobrazí denník jednej postavy podľa dát v databáze.
      */
     public function detail(Request $request): Response
     {
-        return $this->html();
+        $dennik = $this->nacitajDennik($request);
+
+        $povolania = [];
+        $nazvyPovolani = [];
+        foreach (DennikPovolanie::getAll('id_dennik = ?', [$dennik->idDennik], 'id_dennik_povolanie') as $dp) {
+            $povolanie = Povolanie::getOne($dp->idPovolanie);
+            $nazvyPovolani[$dp->idPovolanie] = $povolanie?->nazov ?? '';
+            $povolania[] = ['nazov' => $povolanie?->nazov ?? '', 'uroven' => $dp->uroven];
+        }
+
+        $schopnosti = [];
+        foreach (DennikZvlastnaSchopnost::getAll('id_dennik = ?', [$dennik->idDennik], 'id_dennik_zvlastna_schopnost') as $dzs) {
+            $zs = ZvlastnaSchopnost::getOne($dzs->idSchopnost);
+            if ($zs !== null) {
+                $schopnosti[] = ['nazov' => $zs->nazov, 'vlastnost' => $zs->vlastnost,
+                    'povolanie' => $nazvyPovolani[$dzs->idPovolanie] ?? ''];
+            }
+        }
+
+        return $this->html([
+            'dennik' => $dennik,
+            'rasa' => Rasa::getOne($dennik->idRasa),
+            'rasovaSchopnost' => RasovaSchopnost::getOne($dennik->idRasovaSchopnost),
+            'povolania' => $povolania,
+            'schopnosti' => $schopnosti,
+            'ulozene' => $request->get('ulozene') !== null,
+        ]);
+    }
+
+    /**
+     * Uloží zmeny denníka (POST): meno, vlastnosti, peniaze, vybavenie a poznámky.
+     */
+    public function update(Request $request): Response
+    {
+        $dennik = $this->nacitajDennik($request);
+        if (!$request->isPost()) {
+            return $this->redirect($this->url('dennik.detail', ['id' => $dennik->idDennik]));
+        }
+
+        $meno = trim((string)$request->post('menoPostavy'));
+        if ($meno !== '' && mb_strlen($meno) <= 120) {
+            $dennik->menoPostavy = $meno;
+        }
+        foreach (['telo', 'dusa', 'vplyv'] as $vlastnost) {
+            // zaškrtnuté políčka majú hodnoty 1..11, uloží sa najvyššie zaškrtnuté
+            $zaskrtnute = $request->post($vlastnost);
+            $dennik->{$vlastnost} = is_array($zaskrtnute) && $zaskrtnute ? min(11, max(0, (int)max($zaskrtnute))) : 0;
+        }
+        foreach (['dukaty', 'grose', 'haliere'] as $peniaze) {
+            $dennik->{$peniaze} = max(0, (int)$request->post($peniaze));
+        }
+
+        // vybavenie: 15 riadkov po 3 stĺpcoch, v DB je každý neprázdny riadok na jednom riadku "a | b | c"
+        $riadky = [];
+        $vybavenie = $request->post('vybavenie');
+        foreach (is_array($vybavenie) ? $vybavenie : [] as $riadok) {
+            if (!is_array($riadok)) {
+                continue;
+            }
+            $bunky = array_map(fn($b) => trim(str_replace(['|', "\n", "\r"], ' ', (string)$b)), array_slice(array_values($riadok), 0, 3));
+            if (implode('', $bunky) !== '') {
+                $riadky[] = rtrim(implode(' | ', $bunky), ' |');
+            }
+        }
+        $dennik->vybavenie = $riadky ? implode("\n", $riadky) : null;
+
+        $poznamky = trim((string)$request->post('popis'));
+        $dennik->popis = $poznamky !== '' ? $poznamky : null;
+        $dennik->upraveny = date('Y-m-d H:i:s');
+        $dennik->save();
+
+        return $this->redirect($this->url('dennik.detail', ['id' => $dennik->idDennik, 'ulozene' => 1]));
+    }
+
+    /**
+     * Zmaže denník (POST). Povolania a schopnosti denníka sa zmažú kaskádou v databáze.
+     */
+    public function delete(Request $request): Response
+    {
+        $dennik = $this->nacitajDennik($request);
+        if ($request->isPost()) {
+            $dennik->delete();
+        }
+        return $this->redirect($this->url('dennik.index'));
+    }
+
+    /**
+     * Načíta denník podľa parametra `id` alebo vyhodí chybu 404.
+     * TODO: po pridaní prihlasovania kontrolovať, že denník patrí prihlásenému používateľovi (alebo je verejný).
+     */
+    private function nacitajDennik(Request $request): Dennik
+    {
+        $id = (int)$request->value('id');
+        $dennik = $id > 0 ? Dennik::getOne($id) : null;
+        if ($dennik === null) {
+            throw new HttpException(404, 'Denník neexistuje.');
+        }
+        return $dennik;
     }
 
     /**
@@ -150,41 +278,5 @@ class DennikController extends BaseController
             'errors' => $errors,
             'old' => $old,
         ];
-    }
-
-    /**
-     * Placeholder dáta do zoznamu denníkov.
-     *
-     * @return array<int, array<string, int|string>>
-     */
-    private function getPlaceholderDenniky(): array
-    {
-        $postavy = [
-            ['Lorem Ipsum', 'Trpaslík', 'Bojovník', 5],
-            ['Dolor Sit Amet', 'Elf', 'Zaříkavač', 3],
-            ['Consectetur', 'Člověk', 'Kejklíř', 2],
-            ['Adipiscing Elit', 'Hobit', 'Mastičkár', 4],
-            ['Sed Do Eiusmod', 'Člověk', 'Bojovník', 1],
-            ['Tempor Incididunt', 'Elf', 'Lovec', 6],
-            ['Ut Labore', 'Hobit', 'Kejklíř', 2],
-            ['Et Dolore Magna', 'Trpaslík', 'Mastičkár', 3],
-            ['Aliqua Enim', 'Člověk', 'Zaříkavač', 4],
-            ['Minim Veniam', 'Elf', 'Kejklíř', 1],
-            ['Quis Nostrud', 'Trpaslík', 'Lovec', 2],
-            ['Exercitation', 'Hobit', 'Bojovník', 3],
-        ];
-
-        $denniky = [];
-        foreach ($postavy as $i => [$jmeno, $rasa, $povolani, $uroven]) {
-            $denniky[] = [
-                'id' => $i + 1,
-                'jmeno' => $jmeno,
-                'rasa' => $rasa,
-                'povolani' => $povolani,
-                'uroven' => $uroven,
-                'hrac' => 'Uživatel ' . ($i + 1),
-            ];
-        }
-        return $denniky;
     }
 }

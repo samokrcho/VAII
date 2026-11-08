@@ -14,7 +14,7 @@
         <!-- Ovládací lišta (zatím jen vizuální) -->
         <form class="row g-2 mb-4" role="search" action="<?= $link->url('dennik.index') ?>">
             <div class="col-12 col-md">
-                <input class="form-control" type="search" name="q" placeholder="Hledat podle jména postavy…" aria-label="Hledat deník">
+                <input class="form-control" type="search" name="q" value="<?= e($q ?? "") ?>" placeholder="Hledat podle jména postavy…" aria-label="Hledat deník">
             </div>
             <div class="col-6 col-md-auto">
                 <select class="form-select" name="povolani" aria-label="Filtrovat podle povolání">
