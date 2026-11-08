@@ -35,7 +35,7 @@
         <section aria-label="Deníky postav">
             <ul class="row row-cols-2 row-cols-lg-3 row-cols-xl-4 g-3 g-md-4 list-unstyled mb-0">
                 <?php /** @var TYPE_NAME $denniky */
-                foreach ($denniky as $dennik) { ?>
+                foreach ($denniky as $dennik): ?>
                     <li class="col">
                         <a class="diary d-block text-decoration-none"
                            href="<?= $link->url('dennik.detail', ['id' => $dennik['id']]) ?>">
@@ -51,7 +51,7 @@
                             </span>
                         </a>
                     </li>
-                <?php } ?>
+                <?php endforeach; ?>
             </ul>
         </section>
 
