@@ -12,7 +12,7 @@ $atributy = ['telo' => 'Tělo', 'duse' => 'Duše', 'vliv' => 'Vliv'];
 $idUrl = ['id' => $dennik->idDennik];
 
 /** Rad 11 políčok pre vlastnosť (zaškrtnuté sú prvé $hodnota). */
-$policka = function (string $name, string $label, int $hodnota) : string {
+$policka = function (string $name, string $label, int $hodnota): string {
     $html = '<span class="boxes" role="group" aria-label="' . e($label) . '">';
     for ($i = 1; $i <= 11; $i++) :
         $html .= '<input type="checkbox" name="' . $name . '[]" value="' . $i . '"'
