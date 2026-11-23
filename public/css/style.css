@@ -572,3 +572,19 @@ ul, ol { list-style: none; }
 .trait__quote em { font-style: italic; }
 .trait__attr { font-weight: 400; }
 .info .form-label { font-family: var(--font-ui), sans-serif; font-weight: 500; }
+
+/* ==========================================================================
+   Úvodní stránka
+   ========================================================================== */
+.home { background: var(--paper); }
+.home__hero { margin-bottom: 2.5rem; }
+.home__title { display: flex; align-items: baseline; justify-content: center; gap: .6rem; margin: 0 0 .5rem; font-size: clamp(2.6rem, 8vw, 4.6rem); line-height: 1.1; }
+.home__lead { font-size: 1.3rem; font-style: italic; margin: 0; }
+.home__section { margin-bottom: 1.75rem; }
+.home__section h2, .home__card h2 { font-size: 1.6rem; font-weight: 600; margin-bottom: .6rem; }
+.home__section p, .home__section li { font-size: 1.15rem; max-width: 70ch; }
+.home__card { padding: 1.25rem 1.5rem; border: 1px solid var(--paper-border); border-radius: .5rem; background: #fff; margin-bottom: 1.5rem; }
+.home__card--pdf p { font-size: 1.1rem; }
+.home__links li { padding: .5rem 0; border-bottom: 1px solid var(--header-border); font-size: 1.1rem; }
+.home__links li:last-child { border-bottom: 0; }
+.home__links a { color: var(--ink); }

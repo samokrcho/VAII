@@ -37,6 +37,6 @@ class HomeController extends BaseController
      */
     public function index(Request $request): Response
     {
-        return $this->redirect($this->url('dennik.index'));
+        return $this->html();
     }
 }

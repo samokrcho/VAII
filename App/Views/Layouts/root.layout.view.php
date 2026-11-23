@@ -38,7 +38,7 @@ $current = strtolower($_GET['c'] ?? 'home');
 <header class="site-header sticky-top">
     <nav class="navbar navbar-expand-md" aria-label="Hlavní navigace">
         <div class="container-fluid px-3 px-md-5">
-            <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="<?= $link->url('dennik.index') ?>" aria-label="Dračí Doupě – domů">
+            <a class="navbar-brand d-flex align-items-center gap-2 m-0" href="<?= $link->url('home.index') ?>" aria-label="Dračí Doupě – domů">
                 <span class="brand__mark" aria-hidden="true">D</span>
                 <span>Dračí Doupě</span>
             </a>
@@ -54,6 +54,11 @@ $current = strtolower($_GET['c'] ?? 'home');
 
             <div class="collapse navbar-collapse" id="hlavni-menu">
                 <ul class="navbar-nav ms-md-auto me-md-4 gap-md-3">
+                    <li class="nav-item">
+                        <a class="nav-link<?= $current === 'home' ? ' active' : '' ?>"
+                           href="<?= $link->url('home.index') ?>"
+                           <?= $current === 'home' ? 'aria-current="page"' : '' ?>>Úvod</a>
+                    </li>
                     <li class="nav-item">
                         <a class="nav-link<?= $current === 'povolanie' ? ' active' : '' ?>"
                            href="<?= $link->url('povolanie.index') ?>"
