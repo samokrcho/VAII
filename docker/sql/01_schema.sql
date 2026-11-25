@@ -67,6 +67,9 @@ CREATE TABLE dennik (
  je_verejny TINYINT(1) NOT NULL DEFAULT 0,
  telo TINYINT NOT NULL DEFAULT 0, dusa TINYINT NOT NULL DEFAULT 0,
  vplyv TINYINT NOT NULL DEFAULT 0,
+ -- maximum (zdatnost) každej vlastnosti; aktuálna hodnota (zdroj) nesmie byť vyššia
+ telo_max TINYINT UNSIGNED NOT NULL DEFAULT 5, dusa_max TINYINT UNSIGNED NOT NULL DEFAULT 5,
+ vplyv_max TINYINT UNSIGNED NOT NULL DEFAULT 5,
  ohrozenie TINYINT UNSIGNED NOT NULL DEFAULT 0,
  vyhoda TINYINT UNSIGNED NOT NULL DEFAULT 0,
  dukaty INT UNSIGNED NOT NULL DEFAULT 0, grose INT UNSIGNED NOT NULL DEFAULT 0,
@@ -78,7 +81,8 @@ CREATE TABLE dennik (
  ON UPDATE CASCADE ON DELETE CASCADE,
  CONSTRAINT fk_dennik_rasova_schopnost FOREIGN KEY (id_rasa,id_rasova_schopnost)
  REFERENCES rasova_schopnost(id_rasa,id_rasova_schopnost)
- ON UPDATE CASCADE ON DELETE RESTRICT
+ ON UPDATE CASCADE ON DELETE RESTRICT,
+ CONSTRAINT chk_dennik_vlastnosti CHECK (telo_max<=10 AND dusa_max<=10 AND vplyv_max<=10 AND ohrozenie<=10 AND vyhoda<=10)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 CREATE TABLE dennik_povolanie (

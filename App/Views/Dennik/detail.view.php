@@ -5,20 +5,76 @@
 /** @var \App\Models\Rasa|null $rasa */
 /** @var \App\Models\RasovaSchopnost|null $rasovaSchopnost */
 /** @var array<int, array{nazov: string, uroven: int}> $povolania */
-/** @var array<int, array{nazov: string, vlastnost: string, povolanie: string}> $schopnosti */
+/** @var array<int, array{text: string}> $schopnosti */
+/** @var array<int, array{id: int, nazov: string}> $dostupne povolania, ktoré postava ešte nemá */
 /** @var bool $ulozene */
 
-$atributy = ['telo' => 'Tělo', 'duse' => 'Duše', 'vliv' => 'Vliv'];
 $idUrl = ['id' => $dennik->idDennik];
 
-/** Rad 11 políčok pre vlastnosť (zaškrtnuté sú prvé $hodnota). */
-$policka = function (string $name, string $label, int $hodnota): string {
-    $html = '<span class="boxes" role="group" aria-label="' . e($label) . '">';
+/**
+ * Rad 11 políčok pre vlastnosť. Aktívne (zaškrtnuté) je prvých $hodnota, políčka nad maximom
+ * ($max) sú prečiarknuté a nedajú sa použiť. JS pri kliknutí drží aktívne políčka súvisle zľava.
+ */
+$policka = function (string $name, string $label, int $hodnota, int $max): string {
+    $html = '<span class="boxes" data-max="' . $max . '" role="group" aria-label="' . e($label) . '">';
     for ($i = 1; $i <= 11; $i++) :
+        $mimo = $i > $max;
         $html .= '<input type="checkbox" name="' . $name . '[]" value="' . $i . '"'
-            . ($i <= $hodnota ? ' checked' : '') . ' aria-label="' . e($label . ' ' . $i) . '">';
+                . ($i <= $hodnota && !$mimo ? ' checked' : '') . ($mimo ? ' disabled class="is-off"' : '')
+                . ' aria-label="' . e($label . ' ' . $i) . '">';
     endfor;
     return $html . '</span>';
+};
+
+/** Obsah bunky s povolaním: názov, úroveň a v režime úprav tlačidlá − + × (alebo + v prázdnom mieste). */
+$bunkaPovolania = function (?array $p, int $poradie) use ($dostupne): string {
+    if ($p === null) {
+        $html = '<input class="plain" type="text" readonly tabindex="-1" aria-label="Povolání ' . ($poradie + 1) . '" value="">'
+                . '<button type="button" class="class-add" data-act="open-picker" aria-haspopup="listbox">+ Přidat povolání</button>'
+                . '<div class="picker" hidden role="listbox" aria-label="Povolání, která postava ještě nemá">';
+        foreach ($dostupne as $d) :
+            $html .= '<button type="button" role="option" data-act="add" data-id="' . (int)$d['id'] . '">' . e($d['nazov']) . '</button>';
+        endforeach;
+        return $html . ($dostupne ? '' : '<p class="picker__empty">Žádné další povolání.</p>') . '</div>';
+    }
+    $html = '<input class="plain" type="text" readonly tabindex="-1" aria-label="Povolání ' . ($poradie + 1) . '" value="' . e($p['nazov']) . '">'
+            . '<span class="boxes boxes--narrow ro" role="group" aria-label="Úroveň povolání ' . ($poradie + 1) . '">';
+    for ($i = 1; $i <= 5; $i++) :
+        $html .= '<input type="checkbox" disabled' . ($i <= $p['uroven'] ? ' checked' : '') . ' aria-label="Úroveň ' . $i . '">';
+    endfor;
+    return $html . '</span><span class="class-ctl" data-id="' . (int)$p['id'] . '">'
+            . '<button type="button" data-act="minus" aria-label="Snížit úroveň"' . ($p['uroven'] <= 1 ? ' disabled' : '') . '>−</button>'
+            . '<button type="button" data-act="plus" aria-label="Zvýšit úroveň"' . ($p['uroven'] >= 5 ? ' disabled' : '') . '>+</button>'
+            . '<button type="button" data-act="remove" aria-label="Odstranit povolání">×</button></span>';
+};
+
+/** Riadok zvláštnej schopnosti: získaná schopnosť, alebo miesto čakajúce na výber (tlačidlo + zoznam schopností povolania). */
+$riadokSchopnosti = function (?array $sch, int $i) use ($povolania): string {
+    if ($sch === null || empty($sch['pending'])) {
+        return '<input class="plain" type="text" readonly tabindex="-1" aria-label="Zvláštní schopnost ' . ($i + 1) . '" value="' . e($sch['text'] ?? '') . '">';
+    }
+    $moznosti = [];
+    foreach ($povolania as $p) :
+        if ($p['id'] === $sch['idPovolanie']) :
+            $moznosti = $p['moznosti'];
+        endif;
+    endforeach;
+    $html = '<button type="button" class="ability-add" data-act="open-ability" aria-haspopup="listbox">+ Přidat zvláštní schopnost – ' . e($sch['text']) . '</button>'
+            . '<div class="picker picker--abilities" hidden role="listbox" aria-label="Schopnosti povolání ' . e($sch['text']) . '">';
+    foreach ($moznosti as $m) :
+        $html .= '<button type="button" role="option" data-act="pick-ability" data-povolanie="' . (int)$sch['idPovolanie'] . '" data-id="' . (int)$m['id'] . '">' . e($m['nazov']) . '</button>';
+    endforeach;
+    return $html . ($moznosti ? '' : '<p class="picker__empty">Žádná schopnost není dostupná.</p>') . '</div>';
+};
+
+/** Stupnica 10..1 a 0 s hodnotou ukrytou vo formulárovom poli (posuvník so sponou). */
+$stupnica = function (string $trieda, string $name, string $nazov, int $hodnota): string {
+    $html = '<div class="scale scale--' . $trieda . '" data-scale="' . $trieda . '"><ol class="scale__nums" aria-hidden="true">';
+    for ($n = 10; $n >= 0; $n--) :
+        $html .= '<li data-n="' . $n . '"></li>';
+    endfor;
+    return $html . '</ol><p class="scale__label"><span>' . e($nazov) . '</span></p>'
+            . '<input type="hidden" name="' . $name . '" value="' . $hodnota . '"></div>';
 };
 
 // riadky vybavenia: "a | b | c", vždy 15 riadkov
@@ -46,7 +102,12 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
         </div>
 
         <!-- Úpravy = jeden formulář přes oba listy (POST) -->
-        <form method="post" action="<?= $link->url('dennik.update', $idUrl) ?>">
+        <form method="post" action="<?= $link->url('dennik.update', $idUrl) ?>" id="dennik-form"
+              data-url-add="<?= e($link->url('dennik.pridajPovolanie', $idUrl)) ?>"
+              data-url-level="<?= e($link->url('dennik.zmenUroven', $idUrl)) ?>"
+              data-url-ability="<?= e($link->url('dennik.vyberSchopnost', $idUrl)) ?>"
+              data-url-remove="<?= e($link->url('dennik.odstranPovolanie', $idUrl)) ?>"
+              data-stav="<?= e(json_encode(['dostupne' => $dostupne, 'povolania' => $povolania], JSON_UNESCAPED_UNICODE)) ?>">
 
             <!-- Přepínač režimu úprav (checkbox ve vzhledu Bootstrap tlačítka) -->
             <input type="checkbox" class="btn-check edit-toggle" id="edit-mode" autocomplete="off">
@@ -74,10 +135,7 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
                             </header>
 
                             <section class="traits" aria-labelledby="traits-title">
-                                <div class="scale scale--threat">
-                                    <ol class="scale__nums" reversed aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
-                                    <p class="scale__label"><span>Ohrožení: <?= (int)$dennik->ohrozenie ?></span></p>
-                                </div>
+                                <?= $stupnica('threat', 'ohrozenie', 'Ohrožení', min(10, (int)$dennik->ohrozenie)) ?>
 
                                 <div class="identity">
                                     <h2 id="traits-title">Vlastnosti</h2>
@@ -87,17 +145,17 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
 
                                 <div class="attr">
                                     <span class="attr__name">Tělo:</span>
-                                    <?= $policka('telo', 'Tělo', (int)$dennik->telo) ?>
+                                    <?= $policka('telo', 'Tělo', (int)$dennik->telo, (int)$dennik->teloMax) ?>
                                     <input class="line" type="text" readonly tabindex="-1" aria-label="Poznámka – Tělo">
                                 </div>
                                 <div class="attr">
                                     <span class="attr__name">Duše:</span>
-                                    <?= $policka('dusa', 'Duše', (int)$dennik->dusa) ?>
+                                    <?= $policka('dusa', 'Duše', (int)$dennik->dusa, (int)$dennik->dusaMax) ?>
                                     <input class="line" type="text" readonly tabindex="-1" aria-label="Poznámka – Duše">
                                 </div>
                                 <div class="attr">
                                     <span class="attr__name">Vliv:</span>
-                                    <?= $policka('vplyv', 'Vliv', (int)$dennik->vplyv) ?>
+                                    <?= $policka('vplyv', 'Vliv', (int)$dennik->vplyv, (int)$dennik->vplyvMax) ?>
                                     <input class="line" type="text" readonly tabindex="-1" aria-label="Poznámka – Vliv">
                                 </div>
 
@@ -107,7 +165,7 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
                                     <input class="line" type="text" readonly tabindex="-1" aria-label="Bonus nebo postih 2">
                                 </div>
 
-                                <div class="classes">
+                                <div class="classes" id="povolania-box">
                                     <div class="class-row class-row--head">
                                         <h2>Povolání</h2>
                                         <h2 class="class-row__trait-title">Rasová schopnost:</h2>
@@ -116,14 +174,7 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
                                     <?php for ($r = 0; $r < 3; $r++) :
                                         $p = $povolania[$r] ?? null; ?>
                                         <div class="class-row">
-                                            <div class="class-cell class-cell--job">
-                                                <input class="plain" type="text" readonly tabindex="-1" aria-label="Povolání <?= $r + 1 ?>" value="<?= e($p['nazov'] ?? '') ?>">
-                                                <span class="boxes boxes--narrow ro" role="group" aria-label="Úroveň povolání <?= $r + 1 ?>">
-                                                    <?php for ($i = 1; $i <= 5; $i++) : ?>
-                                                        <input type="checkbox" disabled<?= $p && $i <= $p['uroven'] ? ' checked' : '' ?> aria-label="Úroveň <?= $i ?>">
-                                                    <?php endfor; ?>
-                                                </span>
-                                            </div>
+                                            <div class="class-cell class-cell--job"><?= $bunkaPovolania($p, $r) ?></div>
                                             <?php if ($r === 0) : ?>
                                                 <div class="class-cell class-cell--trait">
                                                     <input class="plain" type="text" readonly tabindex="-1" aria-label="Rasová schopnost" value="<?= e($rasovaSchopnost?->nazov ?? '') ?>">
@@ -143,15 +194,11 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
                                     <span class="abilities__col abilities__col--job">povolání</span>
                                 </div>
                                 <div class="abilities__body">
-                                    <div class="scale scale--advantage">
-                                        <ol class="scale__nums" reversed aria-hidden="true"><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li><li></li></ol>
-                                        <p class="scale__label"><span>Výhoda: <?= (int)$dennik->vyhoda ?></span></p>
-                                    </div>
+                                    <?= $stupnica('advantage', 'vyhoda', 'Výhoda', min(10, (int)$dennik->vyhoda)) ?>
                                     <ul class="abilities__list">
                                         <?php for ($i = 0; $i < 19; $i++) :
                                             $s = $schopnosti[$i] ?? null; ?>
-                                            <li><input class="plain" type="text" readonly tabindex="-1" aria-label="Zvláštní schopnost <?= $i + 1 ?>"
-                                                       value="<?= $s ? e($s['nazov'] . ' (' . ($atributy[$s['vlastnost']] ?? $s['vlastnost']) . ')' . ($s['povolanie'] !== '' ? ' – ' . $s['povolanie'] : '')) : '' ?>"></li>
+                                            <li><?= $riadokSchopnosti($s, $i) ?></li>
                                         <?php endfor; ?>
                                     </ul>
                                 </div>
@@ -163,6 +210,18 @@ $vybavenie = array_pad($vybavenie, max(15, count($vybavenie)), ['', '', '']);
                                 <span class="rule rule--right"></span>
                             </div>
                         </div>
+                        <!-- Sponky Ohrožení / Výhoda: zadní půlka je pod listem, přední nad ním -->
+                        <?php foreach (['threat' => 'Ohrožení', 'advantage' => 'Výhoda'] as $klic => $nazov) : ?>
+                            <div class="clip clip--<?= $klic ?>" data-scale="<?= $klic ?>" role="slider" tabindex="0"
+                                 aria-label="<?= e($nazov) ?>" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0">
+                                <svg class="clip__part clip__back" viewBox="0 0 78 26" aria-hidden="true" focusable="false">
+                                    <path d="M26 3.5H14a9.5 9.5 0 0 0 0 19h12M26 8.5H15.5a4.5 4.5 0 0 0 0 9H26"/>
+                                </svg>
+                                <svg class="clip__part clip__front" viewBox="0 0 78 26" aria-hidden="true" focusable="false">
+                                    <path d="M26 3.5h42a9.5 9.5 0 0 1 0 19H26"/>
+                                </svg>
+                            </div>
+                        <?php endforeach; ?>
                     </article>
                 </div>
 

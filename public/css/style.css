@@ -82,6 +82,8 @@ ul, ol { list-style: none; }
 
 /* ---------- List (papier) ---------- */
 .page {
+    position: relative;
+    isolation: isolate;               /* sponky se řadí pod / nad list jen uvnitř stránky */
     container-type: inline-size;      /* odtud se odvozuje měřítko listu */
     width: min(760px, 100%);
     margin-inline: auto;
@@ -97,6 +99,7 @@ ul, ol { list-style: none; }
     --px: calc(100cqw / 760);         /* 1 jednotka návrhu */
 
     position: relative;
+    z-index: 1;
     min-height: 0;
     overflow: clip;
     padding: 0 calc(57.34 * var(--px)) 0 calc(59.06 * var(--px));
@@ -359,7 +362,7 @@ ul, ol { list-style: none; }
     font-style: italic;
     line-height: calc(22.7 * var(--px));
 }
-.scale__nums li::before { content: counter(list-item); }
+.scale__nums li::before { content: attr(data-n); }
 .scale__nums li { height: calc(22.7 * var(--px)); }
 
 .scale__label {
@@ -373,13 +376,13 @@ ul, ol { list-style: none; }
     font-style: italic;
     white-space: nowrap;
 }
-.scale__label span { transform: rotate(-90deg); flex: none; }
+.scale__label > span { transform: rotate(-90deg); flex: none; }
 
 .scale--threat .scale__nums  { top: calc(1.5 * var(--px)); }
-.scale--threat .scale__label { top: calc(238.4 * var(--px)); height: calc(77 * var(--px)); }
+.scale--threat .scale__label { top: calc(262.4 * var(--px)); height: calc(77 * var(--px)); }
 
 .scale--advantage .scale__nums  { top: calc(9.4 * var(--px)); }
-.scale--advantage .scale__label { top: calc(242.58 * var(--px)); height: calc(64 * var(--px)); }
+.scale--advantage .scale__label { top: calc(266.6 * var(--px)); height: calc(64 * var(--px)); }
 
 /* ---------- Dekorace dole (meč) ---------- */
 .sheet__foot {
@@ -588,3 +591,126 @@ ul, ol { list-style: none; }
 .home__links li { padding: .5rem 0; border-bottom: 1px solid var(--header-border); font-size: 1.1rem; }
 .home__links li:last-child { border-bottom: 0; }
 .home__links a { color: var(--ink); }
+
+/* ==========================================================================
+   Vlastnosti: políčka nad maximem jsou přeškrtnutá a nedají se použít
+   ========================================================================== */
+.boxes input.is-off {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background: linear-gradient(to top right,
+    transparent calc(50% - 1.2 * var(--px)), var(--ink) calc(50% - 1.2 * var(--px)),
+    var(--ink) calc(50% + 1.2 * var(--px)), transparent calc(50% + 1.2 * var(--px)));
+}
+
+/* ==========================================================================
+   Sponky Ohrožení / Výhoda (posuvník): zadní půlka pod listem, přední nad ním
+   ========================================================================== */
+.scale__nums li { text-align: center; width: calc(22 * var(--px)); }
+.edit-toggle:checked ~ .pages .scale__nums { pointer-events: auto; cursor: pointer; }
+.edit-toggle:checked ~ .pages .scale__nums li:hover { background: rgba(31, 31, 31, 0.1); }
+
+.clip {
+    --px: calc(100cqw / 760);
+    position: absolute;
+    left: calc(-26 * var(--px));      /* ohyb přesahuje okraj listu, dovnitř zajíždí jen délka sponky */
+    top: 0;
+    width: calc(78 * var(--px));
+    height: calc(26 * var(--px));
+    pointer-events: none;
+    outline: 0;
+    touch-action: none;
+}
+.clip.is-snapping { transition: top 180ms ease-out; }
+
+.clip__part {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    fill: none;
+    stroke: #7b7f87;
+    stroke-width: 2.3;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+}
+.clip__back  { z-index: 0; }          /* pod listem (sheet má z-index 1) */
+.clip__front { z-index: 2; filter: drop-shadow(0 calc(1.5 * var(--px)) calc(1.5 * var(--px)) rgba(0, 0, 0, 0.35)); }
+
+.edit-toggle:checked ~ .pages .clip__part { pointer-events: auto; cursor: grab; }
+.edit-toggle:checked ~ .pages .clip.is-dragging .clip__part { cursor: grabbing; }
+.clip:focus-visible .clip__part { stroke: var(--ink); }
+
+/* ==========================================================================
+   Povolání: ovládání úrovně (− + ×) a přidání ze seznamu – jen v režimu úprav
+   ========================================================================== */
+.class-cell--job { position: relative; }
+
+.class-ctl,
+.class-add { display: none; }
+.edit-toggle:checked ~ .pages .class-ctl { display: flex; gap: calc(3 * var(--px)); margin-left: auto; padding-bottom: calc(2 * var(--px)); }
+.edit-toggle:checked ~ .pages .class-add { display: block; margin-left: calc(6 * var(--px)); }
+
+.class-ctl button,
+.class-add,
+.picker button {
+    border: calc(1.2 * var(--px)) solid var(--ink);
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--font-ui), sans-serif;
+    font-size: calc(15 * var(--px));
+    line-height: 1;
+    cursor: pointer;
+}
+.class-ctl button { width: calc(21 * var(--px)); height: calc(19 * var(--px)); padding: 0; }
+.class-ctl button:hover:not(:disabled),
+.class-add:hover,
+.picker button:hover { background: var(--ink); color: var(--paper); }
+.class-ctl button:disabled { opacity: 0.35; cursor: not-allowed; }
+.class-ctl button[data-act="remove"]:hover { background: #a32626; border-color: #a32626; }
+.class-add { height: calc(19 * var(--px)); padding: 0 calc(8 * var(--px)); }
+
+.picker {
+    position: absolute;
+    z-index: 5;
+    top: 100%;
+    left: 0;
+    min-width: calc(200 * var(--px));
+    border: calc(1.2 * var(--px)) solid var(--ink);
+    background: var(--paper);
+    box-shadow: 0 calc(3 * var(--px)) calc(8 * var(--px)) rgba(0, 0, 0, 0.25);
+}
+.picker[hidden] { display: none; }
+.picker button { display: block; width: 100%; padding: calc(6 * var(--px)) calc(10 * var(--px)); border-width: 0 0 calc(1 * var(--px)); text-align: left; font-size: calc(16 * var(--px)); }
+.picker__empty { padding: calc(6 * var(--px)) calc(10 * var(--px)); font-size: calc(16 * var(--px)); font-style: italic; }
+
+/* ==========================================================================
+   Výběr zvláštní schopnosti a dialog při snížení úrovně povolání
+   ========================================================================== */
+.abilities__list li { position: relative; }
+.ability-add {
+    display: block;
+    width: 100%;
+    height: calc(26 * var(--px));
+    margin: 0;
+    padding: 0 calc(2 * var(--px));
+    border: 0;
+    background: transparent;
+    color: #6a6a66;
+    font: italic calc(18 * var(--px)) / calc(18 * var(--px)) var(--font-text), serif;
+    text-align: left;
+    white-space: nowrap;
+    overflow: hidden;
+    transform: translateY(calc(-2 * var(--px)));
+    pointer-events: none;                /* mimo režim úprav jen upozornění */
+}
+.edit-toggle:checked ~ .pages .ability-add { pointer-events: auto; cursor: pointer; color: var(--ink); text-decoration: underline dotted; text-underline-offset: calc(3 * var(--px)); }
+.picker--abilities { min-width: calc(260 * var(--px)); max-height: calc(220 * var(--px)); overflow-y: auto; }
+
+.ability-dialog { max-width: 420px; padding: 1rem; border: 1px solid var(--ink); background: var(--paper); font-family: var(--font-ui), sans-serif; }
+.ability-dialog::backdrop { background: rgba(0, 0, 0, 0.4); }
+.ability-dialog p { margin-bottom: 0.75rem; }
+.ability-dialog button { display: block; width: 100%; margin-bottom: 0.4rem; padding: 0.4rem 0.6rem; border: 1px solid var(--ink); background: var(--paper); text-align: left; cursor: pointer; }
+.ability-dialog button:hover { background: var(--ink); color: var(--paper); }
+.ability-dialog__cancel { margin-top: 0.6rem; text-align: center !important; }

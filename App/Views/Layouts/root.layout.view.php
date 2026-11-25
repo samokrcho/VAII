@@ -30,8 +30,8 @@ $current = strtolower($_GET['c'] ?? 'home');
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@400;500;600&family=UnifrakturCook:wght@700&display=swap" rel="stylesheet">
     <!-- Vlastné štýly (až po Bootstrape) -->
-    <link rel="stylesheet" href="<?= $link->asset('css/style.css') ?>">
-    <script src="<?= $link->asset('js/script.js') ?>"></script>
+    <link rel="stylesheet" href="<?= $link->asset('css/style.css') ?>?v=<?= @filemtime(__DIR__ . '/../../../public/css/style.css') ?>">
+    <script src="<?= $link->asset('js/script.js') ?>?v=<?= @filemtime(__DIR__ . '/../../../public/js/script.js') ?>"></script>
 </head>
 <body class="d-flex flex-column min-vh-100">
 
@@ -57,22 +57,22 @@ $current = strtolower($_GET['c'] ?? 'home');
                     <li class="nav-item">
                         <a class="nav-link<?= $current === 'home' ? ' active' : '' ?>"
                            href="<?= $link->url('home.index') ?>"
-                           <?= $current === 'home' ? 'aria-current="page"' : '' ?>>Úvod</a>
+                                <?= $current === 'home' ? 'aria-current="page"' : '' ?>>Úvod</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link<?= $current === 'povolanie' ? ' active' : '' ?>"
                            href="<?= $link->url('povolanie.index') ?>"
-                           <?= $current === 'povolanie' ? 'aria-current="page"' : '' ?>>Povolání</a>
+                                <?= $current === 'povolanie' ? 'aria-current="page"' : '' ?>>Povolání</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link<?= $current === 'rasa' ? ' active' : '' ?>"
                            href="<?= $link->url('rasa.index') ?>"
-                           <?= $current === 'rasa' ? 'aria-current="page"' : '' ?>>Rasa</a>
+                                <?= $current === 'rasa' ? 'aria-current="page"' : '' ?>>Rasa</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link<?= $current === 'dennik' ? ' active' : '' ?>"
                            href="<?= $link->url('dennik.index') ?>"
-                           <?= $current === 'dennik' ? 'aria-current="page"' : '' ?>>Deníky</a>
+                                <?= $current === 'dennik' ? 'aria-current="page"' : '' ?>>Deníky</a>
                     </li>
                 </ul>
             </div>

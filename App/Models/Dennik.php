@@ -9,7 +9,7 @@ use Framework\Core\Model;
  */
 class Dennik extends Model
 {
-    protected static ?array $fillable = ['menoPostavy', 'popis', 'idRasa', 'idRasovaSchopnost', 'jeVerejny', 'telo', 'dusa', 'vplyv', 'ohrozenie', 'vyhoda', 'dukaty', 'grose', 'haliere', 'vybavenie'];
+    protected static ?array $fillable = ['menoPostavy', 'popis', 'idRasa', 'idRasovaSchopnost', 'jeVerejny', 'telo', 'dusa', 'vplyv', 'teloMax', 'dusaMax', 'vplyvMax', 'ohrozenie', 'vyhoda', 'dukaty', 'grose', 'haliere', 'vybavenie'];
 
     public ?int $idDennik = null;
     public int $idPouzivatel = 0;
@@ -21,6 +21,9 @@ class Dennik extends Model
     public int $telo = 0;
     public int $dusa = 0;
     public int $vplyv = 0;
+    public int $teloMax = 5;
+    public int $dusaMax = 5;
+    public int $vplyvMax = 5;
     public int $ohrozenie = 0;
     public int $vyhoda = 0;
     public int $dukaty = 0;

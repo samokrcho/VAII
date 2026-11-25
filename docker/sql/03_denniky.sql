@@ -123,3 +123,6 @@ INSERT INTO dennik_zvlastna_schopnost (id_dennik, id_povolanie, id_schopnost, ur
 INSERT INTO dennik_zvlastna_schopnost (id_dennik, id_povolanie, id_schopnost, uroven_ziskania) SELECT @d, p.id_povolanie, zs.id_schopnost, 4 FROM povolanie p JOIN zvlastna_schopnost zs ON zs.id_povolanie = p.id_povolanie WHERE p.nazov = 'Zaříkávač' AND zs.nazov = 'Povolávač';
 INSERT INTO dennik_zvlastna_schopnost (id_dennik, id_povolanie, id_schopnost, uroven_ziskania) SELECT @d, p.id_povolanie, zs.id_schopnost, 1 FROM povolanie p JOIN zvlastna_schopnost zs ON zs.id_povolanie = p.id_povolanie WHERE p.nazov = 'Mastičkář' AND zs.nazov = 'Ranhojič';
 INSERT INTO dennik_zvlastna_schopnost (id_dennik, id_povolanie, id_schopnost, uroven_ziskania) SELECT @d, p.id_povolanie, zs.id_schopnost, 2 FROM povolanie p JOIN zvlastna_schopnost zs ON zs.id_povolanie = p.id_povolanie WHERE p.nazov = 'Mastičkář' AND zs.nazov = 'Čtení v duši';
+
+-- Maximá vlastností (zdatnosť): aktuálna hodnota + 2, najviac 10.
+UPDATE dennik SET telo_max = LEAST(10, telo + 2), dusa_max = LEAST(10, dusa + 2), vplyv_max = LEAST(10, vplyv + 2) WHERE id_pouzivatel = @admin;
