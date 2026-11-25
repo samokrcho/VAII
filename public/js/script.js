@@ -155,7 +155,7 @@ function initClip(form, clip) {
 function initPovolania(form) {
     const box = document.getElementById('povolania-box');
     const cells = () => [...box.querySelectorAll('.class-cell--job')];
-    const abilitiesBox = form.querySelector('.abilities__list');
+    // const abilitiesBox = form.querySelector('.abilities__list');
     let dostupne = JSON.parse(form.dataset.stav || '{}').dostupne || [];
     let povolania = JSON.parse(form.dataset.stav || '{}').povolania || [];
 
