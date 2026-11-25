@@ -180,8 +180,7 @@ class DennikController extends BaseController
             $nazov = $povolanie?->nazov ?? '';
             $mame[$dp->idPovolanie] = true;
 
-            $ziskane = DennikZvlastnaSchopnost::getAll('id_dennik = ? AND id_povolanie = ?',
-                [$dennik->idDennik, $dp->idPovolanie], 'uroven_ziskania');
+            $ziskane = DennikZvlastnaSchopnost::getAll('id_dennik = ? AND id_povolanie = ?', [$dennik->idDennik, $dp->idPovolanie], 'uroven_ziskania');
             $volne = $this->volneUrovne((int)$dp->uroven, $ziskane);
             $zoSchopnosti = [];
             foreach ($ziskane as $dzs) {
@@ -323,8 +322,7 @@ class DennikController extends BaseController
         }
 
         if ($smer < 0) {
-            $ziskane = DennikZvlastnaSchopnost::getAll('id_dennik = ? AND id_povolanie = ?',
-                [$dennik->idDennik, $dp->idPovolanie], 'uroven_ziskania');
+            $ziskane = DennikZvlastnaSchopnost::getAll('id_dennik = ? AND id_povolanie = ?', [$dennik->idDennik, $dp->idPovolanie], 'uroven_ziskania');
             if (count($ziskane) > $nova) {
                 // jedna schopnosť musí zaniknúť – vyberie ju hráč
                 $zrusit = (int)$request->post('idSchopnost');
